@@ -1026,9 +1026,320 @@
     }
     [data-theme="dark"] .footer-brand { color: #D5E5DC; }
 
+    /* ==========================================================================
+       RESPONSIVE & MOBILE DESIGN SYSTEM (OPTIMIZADO PARA SMARTPHONES)
+       ========================================================================== */
+    
+    /* Controles colapsables en mobile */
+    .btn-mobile-sliders-toggle {
+      display: none;
+      width: 100%;
+      background: var(--selvara-sand);
+      border: 1px solid var(--selvara-border);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--selvara-green);
+      cursor: pointer;
+      align-items: center;
+      justify-content: space-between;
+      transition: var(--transition);
+      margin-top: 4px;
+    }
+    .btn-mobile-sliders-toggle:hover {
+      background: var(--selvara-sage-soft);
+      border-color: var(--selvara-green);
+    }
+    .btn-mobile-sliders-toggle .chevron {
+      font-size: 12px;
+      transition: transform 0.25s ease;
+    }
+    .btn-mobile-sliders-toggle.open .chevron {
+      transform: rotate(180deg);
+    }
+    .sliders-body {
+      display: grid;
+      gap: 16px;
+    }
+
+    /* Barra Flotante Inferior Sticky (Mobile) */
+    .mobile-sticky-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--selvara-border);
+      padding: 10px 16px max(12px, env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+      z-index: 99;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    [data-theme="dark"] .mobile-sticky-bar {
+      background: rgba(24, 35, 29, 0.95);
+      border-top-color: #2C3E34;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+    }
+    .msb-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .msb-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--selvara-muted);
+    }
+    .msb-val {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .msb-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--selvara-border);
+    }
+    .msb-btn {
+      background: var(--selvara-green);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 999px;
+      padding: 8px 15px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(47,74,60,0.25);
+    }
+
+    /* Pistas visuales de swipe para gráficas */
+    .chart-scroll-hint {
+      display: none;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--selvara-sage);
+      background: var(--selvara-sage-soft);
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      border: 1px dashed var(--selvara-border);
+    }
+
+    @media (max-width: 980px) {
+      .btn-mobile-sliders-toggle {
+        display: flex;
+      }
+      .sliders-body {
+        display: none;
+        padding-top: 14px;
+        border-top: 1px solid var(--selvara-border);
+      }
+      .sliders-body.open {
+        display: grid;
+        animation: fadeIn 0.25s ease;
+      }
+      aside.controls {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mobile-sticky-bar {
+        display: flex;
+      }
+      .chart-scroll-hint {
+        display: block;
+      }
+      body {
+        padding-bottom: 90px;
+      }
+      .wrap {
+        padding: 16px 12px 90px;
+        gap: 18px;
+      }
+      .card {
+        padding: 16px 14px;
+        border-radius: var(--radius-sm);
+      }
+      .btn-step {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 16px !important;
+      }
+      input[type=range] {
+        height: 8px;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .top-bar {
+        padding: 8px 12px;
+      }
+      .top-bar .brand-badge span {
+        font-size: 13px;
+      }
+      .top-bar .tag {
+        display: none;
+      }
+      .btn-top {
+        padding: 5px 9px;
+        font-size: 11.5px;
+      }
+      .btn-top span:last-child {
+        display: none;
+      }
+
+      .pitch-mode-bar {
+        padding: 10px 12px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .pitch-steps {
+        padding: 2px 0 6px;
+      }
+
+      header.hero {
+        padding-bottom: 16px;
+        gap: 6px;
+      }
+      .hero-eyebrow {
+        font-size: 10.5px;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      h1.hero-title {
+        font-size: clamp(24px, 6.5vw, 34px);
+        line-height: 1.15;
+      }
+      .hero-subtitle {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .verdict-hero {
+        padding: 16px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .verdict-big {
+        font-size: 38px;
+      }
+      .verdict-narrative {
+        font-size: 13.5px;
+      }
+      .mascot-box {
+        width: 100%;
+      }
+      .mascot-avatar-wrap {
+        width: 90px;
+        height: 90px;
+        padding: 4px;
+      }
+      .mascot-bubble {
+        max-width: 100%;
+        font-size: 12px;
+        margin-top: 6px;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+      .kpi-card {
+        padding: 12px 10px !important;
+      }
+      .kpi-label {
+        font-size: 10px !important;
+        letter-spacing: 0.03em !important;
+      }
+      .kpi-value {
+        font-size: 19px !important;
+      }
+      .kpi-sub {
+        font-size: 10.5px !important;
+        line-height: 1.25 !important;
+      }
+      .kpi-badge {
+        font-size: 9px !important;
+        padding: 2px 5px !important;
+      }
+
+      .waterfall-container {
+        padding: 10px 8px;
+        gap: 6px;
+      }
+      .wf-row {
+        grid-template-columns: minmax(0, 1fr) 90px !important;
+        gap: 6px !important;
+        padding: 5px 4px !important;
+      }
+      .wf-bar-wrapper {
+        grid-column: 1 / -1 !important;
+        order: 3 !important;
+        height: 15px !important;
+      }
+      .wf-lbl b {
+        font-size: 12.5px !important;
+      }
+      .wf-lbl small {
+        font-size: 10.5px !important;
+      }
+      .wf-amt {
+        font-size: 12.5px !important;
+      }
+
+      .section-title {
+        font-size: 21px !important;
+      }
+      .section-desc {
+        font-size: 12.5px !important;
+      }
+
+      .tabs-nav {
+        overflow-x: auto;
+        padding-bottom: 6px;
+      }
+      .tab-btn {
+        padding: 5px 12px;
+        font-size: 12px;
+      }
+
+      .faq-trigger {
+        padding: 12px 14px;
+        font-size: 13px;
+      }
+      .faq-body {
+        padding: 10px 14px 12px;
+        font-size: 12.5px;
+      }
+      dl.glossary-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 4px 0;
+      }
+      dl.glossary-grid dt {
+        margin-top: 8px;
+      }
+    }
+
     /* Optimización para Impresión / PDF */
     @media print {
-      .top-bar, .pitch-mode-bar, aside.controls, .btn-top, .toast { display: none !important; }
+      .top-bar, .pitch-mode-bar, aside.controls, .btn-top, .toast, .mobile-sticky-bar { display: none !important; }
       .grid-layout { grid-template-columns: minmax(0, 1fr) !important; }
       body { background: #FFFFFF !important; color: #000000 !important; }
       .card { box-shadow: none !important; border: 1px solid #CCCCCC !important; }
@@ -1109,7 +1420,7 @@
     <div class="grid-layout">
       
       <!-- Panel de Control y Supuestos (Sticky) -->
-      <aside class="card controls" aria-label="Supuestos del modelo">
+      <aside class="card controls" id="ctlPanel" aria-label="Supuestos del modelo">
         <div class="panel-header">
           <h2>Supuestos del TP</h2>
           <button type="button" class="btn-reset" id="btnResetAll" title="Restablecer al escenario oficial del TP">Restablecer base</button>
@@ -1126,7 +1437,16 @@
           </div>
         </div>
 
-        <!-- Controles Deslizantes -->
+        <!-- Botón para alternar sliders en mobile -->
+        <button type="button" class="btn-mobile-sliders-toggle" id="btnToggleSliders">
+          <span style="display:flex; align-items:center; gap:6px;">
+            <span>⚙️</span> <span id="toggleSlidersText">Ajustar variables detalladas (6 sliders)</span>
+          </span>
+          <span class="chevron" id="toggleSlidersChevron">▼</span>
+        </button>
+
+        <div class="sliders-body" id="slidersBody">
+          <!-- Controles Deslizantes -->
         <div class="control-item" id="ctlP">
           <div class="control-header">
             <span>Planes anuales vendidos:</span>
@@ -1205,14 +1525,15 @@
           <small class="control-desc">20% descuento por pago total anticipado. El resto abona por sesión (10% off).</small>
         </div>
 
-        <!-- Decisión de Inversión / CAPEX -->
-        <label class="toggle-purchase" for="compra">
-          <input id="compra" type="checkbox">
-          <div>
-            <span class="label-text">Comprar láser propio en julio ($18 M)</span>
-            <small>Elimina el alquiler ($11.000/v) y suma mantenimiento fijo ($450.000/mes).</small>
-          </div>
-        </label>
+          <!-- Decisión de Inversión / CAPEX -->
+          <label class="toggle-purchase" for="compra">
+            <input id="compra" type="checkbox">
+            <div>
+              <span class="label-text">Comprar láser propio en julio ($18 M)</span>
+              <small>Elimina el alquiler ($11.000/v) y suma mantenimiento fijo ($450.000/mes).</small>
+            </div>
+          </label>
+        </div> <!-- .sliders-body -->
       </aside>
 
       <!-- Área de Informes e Interacción Principal -->
@@ -1303,6 +1624,7 @@
 
           <!-- Vista Gráficos -->
           <div id="chartView">
+            <div class="chart-scroll-hint">👈 Deslizá la gráfica horizontalmente para ver los 12 meses 👉</div>
             <div class="chart-container" id="chart">
               <!-- Gráficos SVG interactivos -->
             </div>
@@ -1443,6 +1765,22 @@
       </main>
     </div>
   </div>
+
+  <!-- Barra Flotante Inferior para Mobile -->
+  <aside class="mobile-sticky-bar" id="mobileStickyBar" aria-label="Resumen rápido mobile">
+    <div class="msb-item">
+      <span class="msb-lbl">Resultado 2027</span>
+      <span class="msb-val pos" id="msbVal">+$0 M</span>
+    </div>
+    <div class="msb-divider"></div>
+    <div class="msb-item">
+      <span class="msb-lbl">Caja Final</span>
+      <span class="msb-val" id="msbCaja" style="color:var(--cash);">+$0 M</span>
+    </div>
+    <button type="button" class="msb-btn" id="msbBtnControls" title="Subir a los controles">
+      <span>⚙️</span> Sliders
+    </button>
+  </aside>
 
   <!-- Toast Notificador -->
   <div class="toast" id="toastMsg">
@@ -1678,6 +2016,16 @@
       $("kCajaSub").textContent = `Punto más bajo: ${fM(mesMinCaja.acc)} (${mesMinCaja.m})`;
       $("kCajaBadge").textContent = cajaFinal > 20e6 ? "Caja Fuerte" : cajaFinal >= 0 ? "Solvente" : "Quiebra de caja";
       $("kCajaBadge").className = "kpi-badge " + (cajaFinal > 20e6 ? "badge-success" : cajaFinal >= 0 ? "badge-warning" : "badge-danger");
+
+      // Barra Flotante Mobile
+      if ($("msbVal")) {
+        $("msbVal").textContent = fM(R);
+        $("msbVal").className = "msb-val " + (esPositivo ? "pos" : "neg");
+      }
+      if ($("msbCaja")) {
+        $("msbCaja").textContent = fM(cajaFinal);
+        $("msbCaja").className = "msb-val " + (cajaFinal >= 0 ? "pos" : "neg");
+      }
 
       // Ratio LTV / CAC
       const ratioLtvCac = M.ltv / M.cpa;
@@ -2191,6 +2539,38 @@
           $("themeIcon").textContent = "☀️";
         }
       });
+
+      // Alternar sliders en mobile
+      const btnToggle = $("btnToggleSliders");
+      const slidersBody = $("slidersBody");
+      if (btnToggle && slidersBody) {
+        btnToggle.addEventListener("click", () => {
+          const isOpen = slidersBody.classList.toggle("open");
+          btnToggle.classList.toggle("open", isOpen);
+          if ($("toggleSlidersText")) {
+            $("toggleSlidersText").textContent = isOpen 
+              ? "Ocultar variables detalladas" 
+              : "Ajustar variables detalladas (6 sliders)";
+          }
+          if ($("toggleSlidersChevron")) {
+            $("toggleSlidersChevron").textContent = isOpen ? "▲" : "▼";
+          }
+        });
+      }
+
+      // Botón flotante mobile para ir a los controles
+      if ($("msbBtnControls")) {
+        $("msbBtnControls").addEventListener("click", () => {
+          if (slidersBody && !slidersBody.classList.contains("open")) {
+            slidersBody.classList.add("open");
+            if (btnToggle) btnToggle.classList.add("open");
+            if ($("toggleSlidersText")) $("toggleSlidersText").textContent = "Ocultar variables detalladas";
+            if ($("toggleSlidersChevron")) $("toggleSlidersChevron").textContent = "▲";
+          }
+          const ctl = $("ctlPanel");
+          if (ctl) ctl.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
 
       // Clic en la mascota para alternar tips
       $("mascotAvatar").addEventListener("click", () => {
