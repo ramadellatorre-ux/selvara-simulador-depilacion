@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador Financiero · Depilación Definitiva | Selvara</title>
+  <meta name="description" content="Simulador financiero interactivo del servicio de depilación definitiva para Selvara Estética Integral. Cátedra ISEC 2026.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       SELVARA ESTÉTICA INTEGRAL · SISTEMA VISUAL Y VARIABLES
+       Paleta: Verde #2F4A3C, Salvia #4A5A3E, Nude #D8A99A, Arena #F8F6F1, Carbón #2D332F
+       Tipografías: Cormorant Garamond (títulos itálicos) + Jost (cuerpo y UI)
+       ========================================================================== */
+    :root {
+      --selvara-green: #2F4A3C;
+      --selvara-green-dark: #1F3329;
+      --selvara-green-light: #3D5F4D;
+      --selvara-sage: #4A5A3E;
+      --selvara-sage-soft: #EEF2EB;
+      --selvara-nude: #D8A99A;
+      --selvara-nude-dark: #B87C6C;
+      --selvara-nude-soft: #F9EFEA;
+      --selvara-sand: #F8F6F0;
+      --selvara-sand-dark: #EDE7DC;
+      --selvara-charcoal: #2A312B;
+      --selvara-muted: #5E6962;
+      --selvara-border: #DFD8CC;
+      --surface: #FFFFFF;
+      --surface-card: #FFFFFF;
+      
+      --gain: #267A52;
+      --gain-bg: #E8F5EF;
+      --gain-border: #B2DEC8;
+      
+      --loss: #C03E33;
+      --loss-bg: #FDF1F0;
+      --loss-border: #F3BDB7;
+      
+      --cash: #B0742B;
+      --cash-bg: #FBF4E8;
+      --cash-border: #E8CF9F;
+      
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-body: "Jost", system-ui, -apple-system, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+      
+      --shadow-sm: 0 2px 8px rgba(47, 74, 60, 0.05);
+      --shadow-md: 0 8px 24px rgba(47, 74, 60, 0.08);
+      --shadow-lg: 0 16px 36px rgba(47, 74, 60, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="dark"] {
+      --selvara-sand: #121A15;
+      --selvara-sand-dark: #1B2620;
+      --surface: #18231D;
+      --surface-card: #1D2A23;
+      --selvara-charcoal: #F0F4F1;
+      --selvara-muted: #9EABA3;
+      --selvara-border: #2C3E34;
+      --selvara-sage-soft: #202F26;
+      --selvara-nude-soft: #2E221F;
+      --gain: #3DD18C;
+      --gain-bg: #143322;
+      --gain-border: #225C3C;
+      --loss: #F4756B;
+      --loss-bg: #3B1B18;
+      --loss-border: #6B2E28;
+      --cash: #F3BA59;
+      --cash-bg: #332512;
+      --cash-border: #6B4F22;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--selvara-sand);
+      color: var(--selvara-charcoal);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      padding-bottom: 80px;
+    }
+
+    /* Barra Superior Cátedra / Navegación */
+    .top-bar {
+      background: var(--selvara-green);
+      color: #FFFFFF;
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .top-bar .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+    }
+    .top-bar .leaf-icon {
+      width: 22px;
+      height: 22px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .top-bar .tag {
+      background: rgba(216, 169, 154, 0.25);
+      color: var(--selvara-nude);
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(216, 169, 154, 0.4);
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-top {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #FFFFFF;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    .btn-top:hover {
+      background: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,0.4);
+    }
+    .btn-top.active {
+      background: var(--selvara-nude);
+      color: var(--selvara-green-dark);
+      border-color: var(--selvara-nude);
+      font-weight: 600;
+    }
+
+    /* Barra de Modo Presentación / Pitch */
+    .pitch-mode-bar {
+      background: linear-gradient(90deg, var(--selvara-sage-soft), var(--selvara-nude-soft));
+      border-bottom: 1px solid var(--selvara-border);
+      padding: 12px 24px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: var(--transition);
+      animation: slideDown 0.3s ease;
+    }
+    .pitch-mode-bar.active {
+      display: flex;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .pitch-steps {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 0;
+    }
+    .pitch-step-btn {
+      background: var(--surface);
+      border: 1px solid var(--selvara-border);
+      color: var(--selvara-charcoal);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pitch-step-btn:hover {
+      border-color: var(--selvara-green);
+    }
+    .pitch-step-btn.current {
+      background: var(--selvara-green);
+      color: #FFFFFF;
+      border-color: var(--selvara-green);
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(47,74,60,0.2);
+    }
+
+    /* Contenedor Principal */
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      display: grid;
+      gap: 28px;
+    }
+
+    /* Encabezado Editorial Selvara */
+    header.hero {
+      display: grid;
+      gap: 10px;
+      border-bottom: 1px solid var(--selvara-border);
+      padding-bottom: 24px;
+      position: relative;
+    }
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--selvara-sage);
+    }
+    .hero-eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--selvara-nude-dark);
+    }
+    h1.hero-title {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 600;
+      font-size: clamp(32px, 4.5vw, 48px);
+      line-height: 1.1;
+      color: var(--selvara-green);
+      letter-spacing: -0.01em;
+    }
+    [data-theme="dark"] h1.hero-title {
+      color: #E2ECE5;
+    }
+    .hero-subtitle {
+      font-size: 16px;
+      color: var(--selvara-muted);
+      max-width: 78ch;
+      line-height: 1.6;
+    }
+
+    /* Layout Grilla: Panel de Control Izquierda + Contenido Derecha */
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 980px) {
+      .grid-layout { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    /* Paneles y Tarjetas */
+    .card {
+      background: var(--surface-card);
+      border: 1px solid var(--selvara-border);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: grid;
+      gap: 16px;
+      transition: var(--transition);
+    }
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    .card.highlight-focus {
+      outline: 3px solid var(--selvara-nude);
+      outline-offset: 4px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Panel de Control (Sticky) */
+    aside.controls {
+      position: sticky;
+      top: 60px;
+      display: grid;
+      gap: 20px;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--selvara-border);
+      padding-bottom: 12px;
+    }
+    .panel-header h2 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-style: italic;
+      color: var(--selvara-green);
+    }
+    [data-theme="dark"] .panel-header h2 { color: #D7E5DC; }
+    .btn-reset {
+      background: none;
+      border: none;
+      color: var(--selvara-muted);
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 4px;
+    }
+    .btn-reset:hover { color: var(--selvara-green); }
+
+    /* Presets con estilo de chips */
+    .preset-group {
+      display: grid;
+      gap: 8px;
+    }
+    .preset-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--selvara-muted);
+    }
+    .preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .chip {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--selvara-sand);
+      color: var(--selvara-charcoal);
+      border: 1px solid var(--selvara-border);
+      border-radius: 999px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .chip:hover {
+      border-color: var(--selvara-green);
+      background: var(--selvara-sage-soft);
+    }
+    .chip[aria-pressed="true"] {
+      background: var(--selvara-green);
+      color: #FFFFFF;
+      border-color: var(--selvara-green);
+      font-weight: 600;
+    }
+
+    /* Control Sliders */
+    .control-item {
+      display: grid;
+      gap: 6px;
+    }
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 13px;
+      color: var(--selvara-charcoal);
+    }
+    .control-header .val {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--selvara-green);
+      background: var(--selvara-sage-soft);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    [data-theme="dark"] .control-header .val {
+      color: #92DFB4;
+      background: rgba(146,223,180,0.12);
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-step {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid var(--selvara-border);
+      background: var(--surface);
+      color: var(--selvara-charcoal);
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+    .btn-step:hover {
+      background: var(--selvara-sand);
+      border-color: var(--selvara-green);
+    }
+    input[type=range] {
+      flex: 1;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--selvara-border);
+      accent-color: var(--selvara-green);
+      cursor: pointer;
+      outline: none;
+    }
+    .control-desc {
+      font-size: 11.5px;
+      color: var(--selvara-muted);
+      line-height: 1.35;
+    }
+
+    /* Checkbox de Compra de Láser */
+    .toggle-purchase {
+      background: var(--selvara-nude-soft);
+      border: 1px dashed var(--selvara-nude-dark);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .toggle-purchase:hover {
+      background: rgba(216, 169, 154, 0.25);
+    }
+    .toggle-purchase input {
+      margin-top: 3px;
+      accent-color: var(--selvara-green);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+    .toggle-purchase .label-text {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--selvara-charcoal);
+    }
+    .toggle-purchase small {
+      display: block;
+      font-size: 11px;
+      color: var(--selvara-muted);
+      margin-top: 2px;
+    }
+
+    /* ==========================================================================
+       TARJETA DE VEREDICTO + ASESORA SELVARA (MASCOTA DINÁMICA)
+       ========================================================================== */
+    .verdict-hero {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--selvara-sage-soft) 100%);
+      border: 2px solid var(--selvara-green);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 200px;
+      gap: 20px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    [data-theme="dark"] .verdict-hero {
+      background: linear-gradient(135deg, #1A2720 0%, #15201A 100%);
+    }
+    @media (max-width: 760px) {
+      .verdict-hero { grid-template-columns: minmax(0, 1fr); }
+      .mascot-box { justify-self: center; }
+    }
+    .verdict-content {
+      display: grid;
+      gap: 8px;
+    }
+    .verdict-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--selvara-sage);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .verdict-big {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 6vw, 54px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .verdict-big.pos { color: var(--gain); }
+    .verdict-big.neg { color: var(--loss); }
+    .verdict-narrative {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--selvara-charcoal);
+      max-width: 64ch;
+    }
+
+    /* Caja de la Mascota Interactiva */
+    .mascot-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .mascot-avatar-wrap {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--surface) 60%, var(--selvara-sand-dark) 100%);
+      border: 3px solid var(--selvara-nude);
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(47,74,60,0.15);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .mascot-avatar-wrap:hover {
+      transform: scale(1.04) rotate(2deg);
+    }
+    .mascot-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .mascot-bubble {
+      margin-top: 10px;
+      background: var(--surface);
+      border: 1px solid var(--selvara-border);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 11.5px;
+      line-height: 1.35;
+      color: var(--selvara-charcoal);
+      text-align: center;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+      max-width: 180px;
+    }
+    .mascot-bubble::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 6px 6px;
+      border-style: solid;
+      border-color: transparent transparent var(--selvara-border);
+    }
+
+    /* Fila de KPIs Principales */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media (max-width: 820px) {
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 480px) {
+      .kpi-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+    .kpi-card {
+      background: var(--surface-card);
+      border: 1px solid var(--selvara-border);
+      border-radius: var(--radius-md);
+      padding: 18px 16px;
+      display: grid;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .kpi-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--selvara-border);
+    }
+    .kpi-card.gain::before { background: var(--gain); }
+    .kpi-card.loss::before { background: var(--loss); }
+    .kpi-card.cash::before { background: var(--cash); }
+    .kpi-card.accent::before { background: var(--selvara-green); }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--selvara-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .kpi-value {
+      font-family: var(--font-mono);
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--selvara-charcoal);
+    }
+    .kpi-value.pos { color: var(--gain); }
+    .kpi-value.neg { color: var(--loss); }
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--selvara-muted);
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+    .kpi-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      width: fit-content;
+      margin-top: 4px;
+    }
+    .kpi-badge.badge-success { background: var(--gain-bg); color: var(--gain); }
+    .kpi-badge.badge-warning { background: var(--cash-bg); color: var(--cash); }
+    .kpi-badge.badge-danger { background: var(--loss-bg); color: var(--loss); }
+
+    /* ==========================================================================
+       SECCIÓN: UNA VISITA DE PUNTA A PUNTA (WATERFALL)
+       ========================================================================== */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--selvara-green);
+    }
+    [data-theme="dark"] .section-title { color: #E0EBE4; }
+    .section-desc {
+      color: var(--selvara-muted);
+      font-size: 14px;
+      max-width: 72ch;
+    }
+
+    .waterfall-container {
+      display: grid;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--selvara-border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+    .wf-row {
+      display: grid;
+      grid-template-columns: minmax(170px, 1.3fr) minmax(0, 3fr) 110px;
+      gap: 14px;
+      align-items: center;
+      font-size: 13.5px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: background 0.15s ease;
+    }
+    .wf-row:hover {
+      background: var(--selvara-sand);
+    }
+    .wf-lbl {
+      display: grid;
+      gap: 1px;
+    }
+    .wf-lbl b {
+      font-weight: 600;
+      color: var(--selvara-charcoal);
+    }
+    .wf-lbl small {
+      font-size: 11px;
+      color: var(--selvara-muted);
+    }
+    .wf-bar-wrapper {
+      position: relative;
+      height: 22px;
+      background: var(--selvara-sand-dark);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .wf-bar {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 4px;
+      transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .wf-amt {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      text-align: right;
+      font-weight: 500;
+    }
+    .wf-amt.pos { color: var(--gain); font-weight: 600; }
+    .wf-amt.neg { color: var(--loss); }
+
+    @media (max-width: 600px) {
+      .wf-row {
+        grid-template-columns: minmax(0, 1fr) 90px;
+      }
+      .wf-bar-wrapper {
+        grid-column: 1 / -1;
+        order: 3;
+      }
+    }
+
+    /* ==========================================================================
+       SECCIÓN: MES A MES (GRÁFICOS SVG Y TABLA DETALLADA)
+       ========================================================================== */
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--selvara-border);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--selvara-muted);
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .tab-btn:hover {
+      color: var(--selvara-green);
+      background: var(--selvara-sand);
+    }
+    .tab-btn.active {
+      background: var(--selvara-green);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .chart-container {
+      width: 100%;
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--selvara-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+    .chart-container svg {
+      display: block;
+      width: 100%;
+      min-width: 600px;
+      height: auto;
+    }
+
+    /* Tabla Detallada */
+    .table-wrapper {
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--selvara-border);
+      border-radius: var(--radius-md);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--selvara-border);
+      text-align: right;
+      white-space: nowrap;
+    }
+    th:first-child, td:first-child { text-align: left; }
+    th {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--selvara-muted);
+      background: var(--selvara-sand);
+    }
+    td {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    tr:hover td {
+      background: var(--selvara-sand);
+    }
+    tr.total-row td {
+      font-weight: 700;
+      border-top: 2px solid var(--selvara-green);
+      border-bottom: 2px solid var(--selvara-green);
+      background: var(--selvara-sage-soft);
+      color: var(--selvara-green-dark);
+    }
+
+    /* Tablas de resumen ejecutivo sin scroll horizontal */
+    .table-wrapper-fit {
+      overflow-x: hidden !important;
+      width: 100%;
+    }
+    .table-summary {
+      width: 100% !important;
+      table-layout: fixed !important;
+      border-collapse: collapse;
+    }
+    .table-summary td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--selvara-border);
+      vertical-align: middle;
+    }
+    .table-summary td:first-child {
+      width: 66% !important;
+      white-space: normal !important;
+      word-break: normal !important;
+      line-height: 1.35;
+      text-align: left;
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--selvara-charcoal);
+      padding-right: 8px;
+    }
+    .table-summary td:last-child {
+      width: 34% !important;
+      white-space: nowrap !important;
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      padding-left: 6px;
+    }
+    .table-summary tr:hover td {
+      background: var(--selvara-sand);
+    }
+    .table-summary tr.total-row td {
+      font-weight: 700;
+      border-top: 2px solid var(--selvara-green);
+      border-bottom: 2px solid var(--selvara-green);
+      background: var(--selvara-sage-soft);
+      color: var(--selvara-green-dark);
+    }
+    [data-theme="dark"] .table-summary tr.total-row td {
+      color: #A3D8B8;
+      background: #1B2B22;
+    }
+
+    /* ==========================================================================
+       SECCIÓN DOS COLUMNAS: DEL MARGEN AL RESULTADO & CAJA VS RESULTADO
+       ========================================================================== */
+    .two-cols {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .two-cols { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .callout-box {
+      border-left: 4px solid var(--selvara-green);
+      background: var(--selvara-sage-soft);
+      padding: 16px 18px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      display: grid;
+      gap: 8px;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    [data-theme="dark"] .callout-box {
+      background: #182B21;
+    }
+
+    /* ==========================================================================
+       SECCIÓN ACORDEÓN: PREGUNTAS CLAVE DE CÁTEDRA / DEFENSA ORAL
+       ========================================================================== */
+    .faq-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .faq-item {
+      background: var(--surface);
+      border: 1px solid var(--selvara-border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .faq-trigger {
+      width: 100%;
+      text-align: left;
+      padding: 14px 18px;
+      background: none;
+      border: none;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--selvara-charcoal);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .faq-trigger:hover {
+      background: var(--selvara-sand);
+    }
+    .faq-trigger .icon {
+      font-size: 16px;
+      transition: transform 0.2s ease;
+      color: var(--selvara-green);
+    }
+    .faq-item.open .faq-trigger .icon {
+      transform: rotate(180deg);
+    }
+    .faq-body {
+      padding: 0 18px 14px;
+      display: none;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--selvara-muted);
+      border-top: 1px solid var(--selvara-border);
+      background: var(--selvara-sand);
+    }
+    .faq-item.open .faq-body {
+      display: block;
+      padding-top: 12px;
+    }
+
+    /* Glosario y Términos */
+    dl.glossary-grid {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      gap: 10px 18px;
+      font-size: 13.5px;
+    }
+    @media (max-width: 580px) {
+      dl.glossary-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+    dt {
+      font-weight: 600;
+      color: var(--selvara-green);
+    }
+    [data-theme="dark"] dt { color: #9FDDB7; }
+    dd {
+      color: var(--selvara-muted);
+    }
+
+    /* Modal / Popover de Resumen Ejecutivo */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--selvara-green);
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      box-shadow: var(--shadow-lg);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 1000;
+      animation: fadeIn 0.25s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer Institucional */
+    footer.site-footer {
+      border-top: 1px solid var(--selvara-border);
+      padding: 24px 0;
+      color: var(--selvara-muted);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      text-align: center;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--selvara-green);
+    }
+    [data-theme="dark"] .footer-brand { color: #D5E5DC; }
+
+    /* Optimización para Impresión / PDF */
+    @media print {
+      .top-bar, .pitch-mode-bar, aside.controls, .btn-top, .toast { display: none !important; }
+      .grid-layout { grid-template-columns: minmax(0, 1fr) !important; }
+      body { background: #FFFFFF !important; color: #000000 !important; }
+      .card { box-shadow: none !important; border: 1px solid #CCCCCC !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra Superior de Navegación Institucional -->
+  <nav class="top-bar" aria-label="Barra de herramientas y modos">
+    <div class="brand-badge">
+      <!-- Isotipo Hojas Selvara con degradé oficial -->
+      <svg class="leaf-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="selvaraLeafGrad" x1="4" y1="28" x2="28" y2="4" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#28402F" />
+            <stop offset="46%" stop-color="#4A5A3E" />
+            <stop offset="100%" stop-color="#A3BC8C" />
+          </linearGradient>
+        </defs>
+        <path d="M6 26C8 18 16 12 26 6C24 16 18 24 6 26Z" fill="url(#selvaraLeafGrad)" />
+        <path d="M10 26C12 20 17 16 24 12C22 19 18 24 10 26Z" fill="#D8A99A" opacity="0.8" />
+        <path d="M6 26C6 26 12 24 16 20C13 23 8 26 6 26Z" fill="#28402F" />
+      </svg>
+      <span>Selvara · Estética Integral</span>
+      <span class="tag">ISEC 2026 · Monetización</span>
+    </div>
+
+    <div class="top-actions">
+      <button type="button" class="btn-top" id="btnPitchToggle" title="Activar recorrido guiado para la presentación oral">
+        <span>🎙️</span> Modo Presentación
+      </button>
+      <button type="button" class="btn-top" id="btnCopyReport" title="Copiar resumen ejecutivo para el informe o la diapo">
+        <span>📋</span> Copiar Resumen
+      </button>
+      <button type="button" class="btn-top" id="btnThemeToggle" title="Cambiar tema claro/oscuro">
+        <span id="themeIcon">🌙</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Barra Dinámica de Modo Pitch (Recorrido de Exposición Oral) -->
+  <aside class="pitch-mode-bar" id="pitchBar" aria-label="Recorrido de exposición">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <strong style="font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--selvara-green);">Guía de Exposición:</strong>
+      <div class="pitch-steps" id="pitchSteps">
+        <button type="button" class="pitch-step-btn current" data-step="1">1. Margen Unitario</button>
+        <button type="button" class="pitch-step-btn" data-step="2">2. Embudo y CAC</button>
+        <button type="button" class="pitch-step-btn" data-step="3">3. Mes a Mes & Break-Even</button>
+        <button type="button" class="pitch-step-btn" data-step="4">4. Caja vs Ganancia</button>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span id="pitchNote" style="font-size:12px; color:var(--selvara-muted); max-width:340px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+        Explicá primero cuánto deja cada sesión antes de ver el año entero.
+      </span>
+      <button type="button" class="btn-step" id="btnPitchNext" title="Siguiente paso" style="width:auto; padding:0 12px; border-radius:999px; font-size:12px;">Siguiente →</button>
+    </div>
+  </aside>
+
+  <div class="wrap">
+    
+    <!-- Encabezado Editorial -->
+    <header class="hero">
+      <div class="hero-eyebrow">
+        <span>Presupuesto y Monetización</span>
+        <span class="dot"></span>
+        <span>Modelo Económico de Depilación Definitiva</span>
+        <span class="dot"></span>
+        <span>Año 2027</span>
+      </div>
+      <h1 class="hero-title">Depilación definitiva: ¿cuánto gana el servicio y por qué?</h1>
+      <p class="hero-subtitle">
+        Simulador interactivo del modelo de negocios: modificá cualquier supuesto para evaluar en tiempo real el margen por visita, el punto de equilibrio, la sensibilidad publicitaria y el impacto de los cobros prepagos en el flujo de caja.
+      </p>
+    </header>
+
+    <div class="grid-layout">
+      
+      <!-- Panel de Control y Supuestos (Sticky) -->
+      <aside class="card controls" aria-label="Supuestos del modelo">
+        <div class="panel-header">
+          <h2>Supuestos del TP</h2>
+          <button type="button" class="btn-reset" id="btnResetAll" title="Restablecer al escenario oficial del TP">Restablecer base</button>
+        </div>
+
+        <!-- Presets / Escenarios Típicos -->
+        <div class="preset-group">
+          <span class="preset-label">Escenarios Rápidos:</span>
+          <div class="preset-chips" id="presets">
+            <button type="button" class="chip" data-p="base" aria-pressed="true">🎯 Base TP</button>
+            <button type="button" class="chip" data-p="pes" aria-pressed="false">🌧️ Pesimista</button>
+            <button type="button" class="chip" data-p="opt" aria-pressed="false">🚀 Optimista</button>
+            <button type="button" class="chip" data-p="cpl" aria-pressed="false">⚠️ CPL doble</button>
+          </div>
+        </div>
+
+        <!-- Controles Deslizantes -->
+        <div class="control-item" id="ctlP">
+          <div class="control-header">
+            <span>Planes anuales vendidos:</span>
+            <span class="val" id="Pv">300</span>
+          </div>
+          <div class="slider-row">
+            <button type="button" class="btn-step" data-step-id="P" data-dir="-1">−</button>
+            <input id="P" type="range" min="150" max="450" step="5" value="300" aria-label="Planes anuales">
+            <button type="button" class="btn-step" data-step-id="P" data-dir="1">+</button>
+          </div>
+          <small class="control-desc">Base oficial: 300 planes (25 clientes promedio/mes).</small>
+        </div>
+
+        <div class="control-item" id="ctlCpl">
+          <div class="control-header">
+            <span>Costo por contacto (CPL Meta):</span>
+            <span class="val" id="cplv">$4.000</span>
+          </div>
+          <div class="slider-row">
+            <button type="button" class="btn-step" data-step-id="cpl" data-dir="-1">−</button>
+            <input id="cpl" type="range" min="2000" max="10000" step="250" value="4000" aria-label="Costo por contacto">
+            <button type="button" class="btn-step" data-step-id="cpl" data-dir="1">+</button>
+          </div>
+          <small class="control-desc">Lo que cuesta en Meta Ads que un contacto escriba por WhatsApp.</small>
+        </div>
+
+        <div class="control-item" id="ctlConv">
+          <div class="control-header">
+            <span>Conversión a compra efectiva:</span>
+            <span class="val" id="convv">20 %</span>
+          </div>
+          <div class="slider-row">
+            <button type="button" class="btn-step" data-step-id="conv" data-dir="-1">−</button>
+            <input id="conv" type="range" min="8" max="35" step="1" value="20" aria-label="Tasa de conversión">
+            <button type="button" class="btn-step" data-step-id="conv" data-dir="1">+</button>
+          </div>
+          <small class="control-desc">Embudo: 40 % reserva cita × 50 % compra el plan = 20 %.</small>
+        </div>
+
+        <div class="control-item" id="ctlJor">
+          <div class="control-header">
+            <span>Alquiler del láser por jornada:</span>
+            <span class="val" id="jorv">$110.000</span>
+          </div>
+          <div class="slider-row">
+            <button type="button" class="btn-step" data-step-id="jor" data-dir="-1">−</button>
+            <input id="jor" type="range" min="70000" max="170000" step="5000" value="110000" aria-label="Alquiler por jornada">
+            <button type="button" class="btn-step" data-step-id="jor" data-dir="1">+</button>
+          </div>
+          <small class="control-desc">Una jornada completa atiende hasta 10 visitas ($11.000/visita).</small>
+        </div>
+
+        <div class="control-item" id="ctlOp">
+          <div class="control-header">
+            <span>Honorario operadora por visita:</span>
+            <span class="val" id="opv">$8.000</span>
+          </div>
+          <div class="slider-row">
+            <button type="button" class="btn-step" data-step-id="op" data-dir="-1">−</button>
+            <input id="op" type="range" min="5000" max="15000" step="500" value="8000" aria-label="Honorario operadora">
+            <button type="button" class="btn-step" data-step-id="op" data-dir="1">+</button>
+          </div>
+          <small class="control-desc">Pago a la profesional técnica por cada paciente atendido.</small>
+        </div>
+
+        <div class="control-item" id="ctlPrep">
+          <div class="control-header">
+            <span>Clientes con pago prepago (100% upfront):</span>
+            <span class="val" id="prepv">50 %</span>
+          </div>
+          <div class="slider-row">
+            <button type="button" class="btn-step" data-step-id="prep" data-dir="-1">−</button>
+            <input id="prep" type="range" min="20" max="80" step="5" value="50" aria-label="Porcentaje prepago">
+            <button type="button" class="btn-step" data-step-id="prep" data-dir="1">+</button>
+          </div>
+          <small class="control-desc">20% descuento por pago total anticipado. El resto abona por sesión (10% off).</small>
+        </div>
+
+        <!-- Decisión de Inversión / CAPEX -->
+        <label class="toggle-purchase" for="compra">
+          <input id="compra" type="checkbox">
+          <div>
+            <span class="label-text">Comprar láser propio en julio ($18 M)</span>
+            <small>Elimina el alquiler ($11.000/v) y suma mantenimiento fijo ($450.000/mes).</small>
+          </div>
+        </label>
+      </aside>
+
+      <!-- Área de Informes e Interacción Principal -->
+      <main class="main-column" style="display:grid; gap:24px;">
+
+        <!-- Veredicto Principal con Mascota Reactiva de Selvara -->
+        <section class="verdict-hero" id="verdictSection" aria-live="polite">
+          <div class="verdict-content">
+            <span class="verdict-tag">
+              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:currentColor;"></span>
+              Resultado Económico Anual (2027)
+            </span>
+            <div class="verdict-big pos" id="vBig">+$0 M</div>
+            <p class="verdict-narrative" id="vText">Calculando escenario...</p>
+          </div>
+
+          <!-- Mascota Dinámica de Selvara -->
+          <div class="mascot-box">
+            <div class="mascot-avatar-wrap" id="mascotAvatar" title="Hacé clic para pedirle un consejo financiero a la mascota">
+              <img src="assets/mascota/pose-10.webp" onerror="this.src='../selvara-proyecto-final/Mascota/pose-10.webp'" alt="Mascota asesora de Selvara" class="mascot-img" id="mascotImg">
+            </div>
+            <div class="mascot-bubble" id="mascotSpeech">
+              ¡Hola Rami! Mové los controles y te voy contando cómo impacta en el negocio.
+            </div>
+          </div>
+        </section>
+
+        <!-- Cuadrícula de KPIs Ejecutivos -->
+        <div class="kpi-grid">
+          
+          <div class="kpi-card accent" id="kpiCardMes">
+            <span class="kpi-label">Ganancia mensual promedio</span>
+            <span class="kpi-value pos" id="kMes">$0</span>
+            <span class="kpi-sub" id="kMesSub">rango del año</span>
+            <span class="kpi-badge badge-success" id="kMesBadge">Operativo</span>
+          </div>
+
+          <div class="kpi-card" id="kpiCardEq">
+            <span class="kpi-label">Punto de Equilibrio</span>
+            <span class="kpi-value" id="kEq">0</span>
+            <span class="kpi-sub">visitas/mes para no perder</span>
+            <span class="kpi-badge badge-warning" id="kEqBadge">Cubierto desde Mar</span>
+          </div>
+
+          <div class="kpi-card cash" id="kpiCardCaja">
+            <span class="kpi-label">Caja Líquida a Fin de Año</span>
+            <span class="kpi-value pos" id="kCaja">+$0 M</span>
+            <span class="kpi-sub" id="kCajaSub">fondo de maniobra</span>
+            <span class="kpi-badge badge-success" id="kCajaBadge">Caja Fuerte</span>
+          </div>
+
+          <div class="kpi-card" id="kpiCardLtv">
+            <span class="kpi-label">Ratio Saludable LTV / CAC</span>
+            <span class="kpi-value pos" id="kLtv">0.0x</span>
+            <span class="kpi-sub" id="kLtvSub">valor cliente vs costo</span>
+            <span class="kpi-badge badge-success" id="kLtvBadge">Excelente (>3x)</span>
+          </div>
+
+        </div>
+
+        <!-- SECCIÓN 1: Desglose Unitario de una Visita (Waterfall) -->
+        <section class="card" id="sectionWaterfall">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">1. Una visita, de punta a punta</h2>
+              <p class="section-desc">¿A dónde va cada peso de una visita promedio? Arranca en el precio de lista ($53.800) y deduce descuentos, impuestos y costos directos hasta llegar al margen de contribución libre para pagar fijos y pauta.</p>
+            </div>
+            <span class="tag" style="background:var(--selvara-sage-soft); color:var(--selvara-green); border:1px solid var(--selvara-border);">Unit Economics</span>
+          </div>
+
+          <div class="waterfall-container" id="wf">
+            <!-- Rellenado dinámicamente con las barras de la cascada -->
+          </div>
+        </section>
+
+        <!-- SECCIÓN 2: Mes a Mes (Gráfico de Barras + Curva de Caja + Tabla) -->
+        <section class="card" id="sectionMonthly">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">2. Evolución Mes a Mes (2027)</h2>
+              <p class="section-desc">Comparativa entre el <b>Resultado Económico</b> (ganancia/pérdida mensual) y la <b>Caja Acumulada</b> en cuenta bancaria. Notá cómo la caja sube velozmente debido a los planes prepagos anticipados.</p>
+            </div>
+            <div class="tabs-nav">
+              <button type="button" class="tab-btn active" id="tabChart">📈 Gráficos</button>
+              <button type="button" class="tab-btn" id="tabTable">📑 Tabla Detallada</button>
+            </div>
+          </div>
+
+          <!-- Vista Gráficos -->
+          <div id="chartView">
+            <div class="chart-container" id="chart">
+              <!-- Gráficos SVG interactivos -->
+            </div>
+          </div>
+
+          <!-- Vista Tabla -->
+          <div id="tableView" style="display:none;">
+            <div class="table-wrapper">
+              <table id="tbl">
+                <!-- Generado dinámicamente -->
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 3: Desgloses Comparativos (Del Margen al Resultado & Por Qué la Caja es Mayor) -->
+        <div class="two-cols" id="sectionDeepDive">
+          
+          <section class="card">
+            <div class="section-header">
+              <h2 class="section-title" style="font-size:22px;">Del margen al resultado neto</h2>
+            </div>
+            <p class="section-desc" style="font-size:13px;">Cómo se absorben los costos de estructura y la pauta publicitaria a lo largo de las visitas del año.</p>
+            <div class="table-wrapper table-wrapper-fit">
+              <table id="cascade" class="table-summary"></table>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="section-header">
+              <h2 class="section-title" style="font-size:22px;">¿Por qué la caja es mucho mayor?</h2>
+            </div>
+            <p class="section-desc" style="font-size:13px;">El dinero en la cuenta corriente supera a la ganancia contable por el cobro anticipado de planes prepagos.</p>
+            <div class="table-wrapper table-wrapper-fit">
+              <table id="cashx" class="table-summary"></table>
+            </div>
+            <div class="callout-box" style="margin-top:10px;">
+              <small><b>Atención contable:</b> La diferencia entre caja y resultado no es ganancia libre para retirar; es un pasivo de sesiones ya cobradas que Selvara tiene la obligación de prestar.</small>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- SECCIÓN 4: Preguntas Clave para Defender en la Cátedra -->
+        <section class="card" id="sectionFaq">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Preguntas clave de cátedra (y cómo defenderlas)</h2>
+              <p class="section-desc">Argumentos sólidos frente a los profesores para justificar la rentabilidad, la caja y las decisiones estratégicas de Selvara.</p>
+            </div>
+            <span class="tag">Tips de Defensa</span>
+          </div>
+
+          <div class="faq-grid">
+            
+            <div class="faq-item open">
+              <button type="button" class="faq-trigger">
+                <span>1. ¿Por qué enero y febrero dan pérdida contable si el servicio es rentable?</span>
+                <span class="icon">▼</span>
+              </button>
+              <div class="faq-body">
+                <b>Respuesta técnica:</b> Es un fenómeno normal de rampa de arranque y estacionalidad. En enero (29 visitas) y febrero (35 visitas) la base de pacientes activos es baja, mientras que los costos fijos ($1.002.667) y la pauta corren al 100%. Además, al alquilar el láser por jornada (10 visitas), quedan horas ociosas que encarecen el costo unitario. A partir de marzo (84 visitas), el volumen supera el punto de equilibrio y el servicio pasa a generar ganancias netas crecientes.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-trigger">
+                <span>2. ¿Por qué la caja acumulada es casi el doble que la ganancia a mitad de año?</span>
+                <span class="icon">▼</span>
+              </button>
+              <div class="faq-body">
+                <b>Respuesta técnica:</b> Por el principio contable de lo <i>devengado</i> vs. lo <i>percibido</i>. El 50% de los clientes compra el plan de 8 sesiones abonando el 100% por anticipado (recibiendo un 20% de descuento). Esa masa de dinero entra de inmediato a la cuenta bancaria en el mes 1, pero contablemente la ganancia solo se reconoce a medida que el paciente asiste a cada sesión. La caja excedente es capital de trabajo que financia el negocio, pero representa un pasivo exigible en prestaciones médicas.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-trigger">
+                <span>3. ¿Conviene comprar el láser propio de $18.000.000 en Julio o seguir alquilando?</span>
+                <span class="icon">▼</span>
+              </button>
+              <div class="faq-body">
+                <b>Respuesta técnica:</b> Con más de 140 visitas mensuales, comprar el equipo elimina el alquiler de $11.000 por visita y genera un ahorro operativo sustancial que compensa el costo de mantenimiento fijo ($450.000/mes). Sin embargo, exige desembolsar $18.000.000 de caja en julio. El simulador demuestra que Selvara posee la caja acumulada suficiente para autofinanciar la compra sin endeudamiento bancario, saliendo del año con patrimonio propio y mayor margen unitario para 2028.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-trigger">
+                <span>4. ¿Qué ocurre si Meta Ads se satura y el CPL se duplica a $8.000?</span>
+                <span class="icon">▼</span>
+              </button>
+              <div class="faq-body">
+                <b>Respuesta técnica:</b> Al duplicarse el CPL, el CAC sube de $20.000 a $40.000 por cliente. El ratio LTV/CAC cae a ~2.1x (zona de precaución). Podés presionar el botón «⚠️ CPL doble» en el panel: notarás que el negocio aún se mantiene en terreno positivo si no se compra el equipo, pero el margen de seguridad se achica drásticamente. Esto fundamenta por qué en el punto 6 del TP destinamos recursos al SEO orgánico y a las reseñas de Google Maps: depender solo de pauta paga vuelve al negocio vulnerable a los algoritmos.
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SECCIÓN 5: Glosario de Términos Económicos del TP -->
+        <section class="card" id="sectionGlossary">
+          <div class="section-header">
+            <h2 class="section-title" style="font-size:22px;">Glosario económico del trabajo</h2>
+          </div>
+          <dl class="glossary-grid">
+            <dt>Margen de contribución</dt>
+            <dd>Ingreso neto por visita menos sus costos directos variables (insumos, operadora, láser, comisiones). Con este fondo se pagan los costos fijos y la publicidad.</dd>
+
+            <dt>Punto de equilibrio</dt>
+            <dd>Cantidad exacta de visitas mensuales requeridas para que el beneficio sea cero: (Costos fijos mensuales + Pauta del mes) ÷ Margen de contribución unitario.</dd>
+
+            <dt>CPL (Costo por Lead)</dt>
+            <dd>Lo que se invierte en anuncios de Meta (Facebook/Instagram) para que una persona interesada envíe un mensaje a WhatsApp preguntando por depilación.</dd>
+
+            <dt>CAC / CPA (Costo de Adquisición)</dt>
+            <dd>Costo real de conseguir un cliente que efectiviza la compra: CPL ÷ Tasa de conversión (a $4.000 CPL y 20% conv., CAC = $20.000).</dd>
+
+            <dt>LTV (Customer Lifetime Value)</dt>
+            <dd>Margen bruto acumulado que deja un cliente a lo largo de su ciclo de vida en el centro (8 visitas del plan menos el costo de la garantía de resultados).</dd>
+
+            <dt>Capacidad ociosa (Idle)</dt>
+            <dd>Costo no aprovechado de pagar jornadas fijas de láser de 10 turnos cuando la demanda del mes no llega a completar múltiplos exactos de 10.</dd>
+          </dl>
+        </section>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+          <div class="footer-brand">
+            <!-- Icono hojas -->
+            <svg style="width:16px;height:16px;" viewBox="0 0 32 32" fill="none">
+              <path d="M6 26C8 18 16 12 26 6C24 16 18 24 6 26Z" fill="#28402F" />
+              <path d="M10 26C12 20 17 16 24 12C22 19 18 24 10 26Z" fill="#D8A99A" />
+            </svg>
+            <span>Selvara Estética Integral · Cátedra Práctica Profesionalizante IV · ISEC 2026</span>
+          </div>
+          <p>Herramienta desarrollada para la defensa de Presupuesto y Monetización. Precios y comisiones de mercado (octubre 2026). Valores sin IVA en pesos argentinos.</p>
+        </footer>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Notificador -->
+  <div class="toast" id="toastMsg">
+    <span>✓</span> <span id="toastText">Resumen copiado al portapapeles</span>
+  </div>
+
+  <!-- ==========================================================================
+       LÓGICA JAVASCRIPT DEL SIMULADOR FINANCIERO Y CONTROLADOR DE EVENTOS
+       ========================================================================== -->
+  <script>
+  (function(){
+    "use strict";
+
+    // Constantes oficiales del modelo de cátedra (Octubre 2026)
+    const MESES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+    const MESES_LARGOS = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    
+    // Curva de demanda estacional (visitas y planes vendidos mes a mes)
+    const VISITAS_BASE = [29, 35, 84, 109, 132, 147, 142, 134, 157, 181, 199, 120];
+    const PLANES_BASE  = [12, 15, 33,  36,  33,  21,  18,  24,  33,  33,  27,  15];
+    
+    // Costo de horas ociosas de jornada en alquiler (Tabla 4.4 del TP)
+    const IDLE_BASE = [18619, 59635, 69574, 3899, 75302, 32767, 96662, 60474, 18078, 105942, 1240, 107070];
+    
+    // Parámetros económicos unitarios
+    const PRECIO_LISTA = 53800; // Mix: 60% mujer ($48k), 30% hombre ($64k), 10% zona chica ($25k)
+    const COMISION_MP  = 0.25 * 0.0325 + 0.40 * 0.0629; // Ponderado débito/crédito ~3.33%
+    const IMP_IIBB_DREI = 0.046; // 4.6% sobre facturación neta
+    const INSUMOS_DESC = 1500;  // Gel conductor, descartables, espátulas
+    const COSTOS_FIJOS = 1002667; // Fijos mensuales asignados al servicio
+
+    // Presets del trabajo práctico
+    const PRESETS = {
+      base: { P: 300, cpl: 4000, conv: 20, jor: 110000, op: 8000, prep: 50, compra: false },
+      pes:  { P: 210, cpl: 4500, conv: 16, jor: 110000, op: 8000, prep: 40, compra: false },
+      opt:  { P: 390, cpl: 3500, conv: 24, jor: 110000, op: 8000, prep: 60, compra: false },
+      cpl:  { P: 300, cpl: 8000, conv: 20, jor: 110000, op: 8000, prep: 50, compra: false }
+    };
+
+    // Referencias al DOM
+    const $ = id => document.getElementById(id);
+    const inputsList = ["P", "cpl", "conv", "jor", "op", "prep"];
+
+    // Formateadores monetarios
+    const fm = n => "$" + Math.round(n).toLocaleString("es-AR");
+    const fM = n => {
+      const s = (Math.abs(n) / 1e6).toLocaleString("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      return (n >= 0 ? "+$" : "−$") + s + " M";
+    };
+    const fM2 = n => (n < 0 ? "−" : "") + Math.abs(n / 1e6).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    // Cálculo unitario por visita
+    function calcVisita(s, conAlquilerLaser) {
+      // 50% prepago con 20% off; 35% plan en cuotas con 10% off; 15% sesión suelta lista
+      const descMedio = s.prep * 0.20 + (0.85 - s.prep) * 0.10;
+      const cobrado = PRECIO_LISTA * (1 - descMedio);
+      const netoSinIva = cobrado / 1.21;
+      
+      const costosVar = {
+        mp: COMISION_MP * cobrado,
+        iibb: IMP_IIBB_DREI * netoSinIva,
+        insumos: INSUMOS_DESC,
+        operadora: s.op,
+        laser: conAlquilerLaser ? (s.jor / 10) : 0
+      };
+      
+      const totalCostosVar = costosVar.mp + costosVar.iibb + costosVar.insumos + costosVar.operadora + costosVar.laser;
+      const margenContrib = netoSinIva - totalCostosVar;
+
+      return {
+        descMedio,
+        cobrado,
+        netoSinIva,
+        costosVar,
+        totalCostosVar,
+        margenContrib
+      };
+    }
+
+    // Modelo Anual Mes a Mes
+    function runModel(s) {
+      const volFactor = 1 + 0.836 * (s.P / 300 - 1);
+      const planFactor = s.P / 300;
+      const cpa = s.cpl / s.conv; // Costo por nuevo cliente (CAC)
+      
+      // Costo de garantía de satisfacción (15% de clientes usa 2 sesiones adicionales sin cargo)
+      const garantiaUnit = 0.15 * 2 * (s.jor / 10 + s.op + INSUMOS_DESC);
+      
+      // Valores de planes prepagos
+      const prepagoPlanNeto = 8 * PRECIO_LISTA * 0.80 / 1.21;
+      const sesionPrepagaNeto = PRECIO_LISTA * 0.80 / 1.21;
+
+      let acumuladoCaja = 0;
+      let rows = [];
+      let tot = { v: 0, p: 0, ing: 0, cvTot: 0, cContrib: 0, pauta: 0, rNeto: 0, gar: 0, idle: 0, laserFijo: 0 };
+
+      for (let m = 0; m < 12; m++) {
+        const esLaserPropio = s.compra && m >= 6; // Compra en Julio (mes 6)
+        const v = VISITAS_BASE[m] * volFactor;
+        const p = PLANES_BASE[m] * planFactor;
+        const u = calcVisita(s, !esLaserPropio);
+        
+        const costoIdle = esLaserPropio ? 0 : (IDLE_BASE[m] * volFactor * (s.jor / 110000));
+        const cvBruto = v * u.margenContrib;
+        const laserMaint = esLaserPropio ? 450000 : 0;
+        
+        const contribNeta = cvBruto - (p * garantiaUnit) - costoIdle - laserMaint;
+        const pautaMes = p * cpa;
+        const resOperativo = contribNeta - pautaMes - COSTOS_FIJOS;
+        
+        // Flujo de fondos (Caja)
+        // Se cobra 100% de los nuevos planes prepagos, pero se devuelven sesiones ya cobradas
+        const flujoCaja = resOperativo + (p * s.prep * prepagoPlanNeto) - (v * s.prep * sesionPrepagaNeto) - ((esLaserPropio && m === 6) ? 18000000 : 0);
+        acumuladoCaja += flujoCaja;
+
+        rows.push({
+          m: MESES[m],
+          nombreLargo: MESES_LARGOS[m],
+          v,
+          p,
+          ingresos: v * u.netoSinIva,
+          contribucion: contribNeta,
+          pauta: pautaMes,
+          r: resOperativo,
+          flujo: flujoCaja,
+          acc: acumuladoCaja,
+          u
+        });
+
+        tot.v += v;
+        tot.p += p;
+        tot.ing += v * u.netoSinIva;
+        tot.cContrib += contribNeta;
+        tot.pauta += pautaMes;
+        tot.rNeto += resOperativo;
+        tot.gar += (p * garantiaUnit);
+        tot.idle += costoIdle;
+        tot.cvTot += cvBruto;
+        tot.laserFijo += laserMaint;
+      }
+
+      const unitarioBase = calcVisita(s, true);
+      const ltv = 8 * unitarioBase.margenContrib - garantiaUnit;
+      const puntoEquilibrio = (COSTOS_FIJOS + (s.P * cpa / 12)) / unitarioBase.margenContrib;
+
+      return {
+        rows,
+        tot,
+        cpa,
+        ltv,
+        unitarioBase,
+        puntoEquilibrio,
+        prepagoCobradoTotal: s.P * s.prep * prepagoPlanNeto,
+        prepagoConsumidoTotal: tot.v * s.prep * sesionPrepagaNeto
+      };
+    }
+
+    // Lectura de inputs
+    function getInputs() {
+      return {
+        P: +$("P").value,
+        cpl: +$("cpl").value,
+        conv: +$("conv").value / 100,
+        jor: +$("jor").value,
+        op: +$("op").value,
+        prep: +$("prep").value / 100,
+        compra: $("compra").checked
+      };
+    }
+
+    // Renderizador de Toda la Aplicación
+    function updateApp() {
+      const s = getInputs();
+      const M = runModel(s);
+
+      // 1. Actualizar etiquetas de valores de control
+      $("Pv").textContent = s.P;
+      $("cplv").textContent = fm(s.cpl);
+      $("convv").textContent = Math.round(s.conv * 100) + " %";
+      $("jorv").textContent = fm(s.jor);
+      $("opv").textContent = fm(s.op);
+      $("prepv").textContent = Math.round(s.prep * 100) + " %";
+
+      const R = M.tot.rNeto;
+      const esPositivo = R >= 0;
+
+      // 2. Veredicto Principal
+      $("vBig").textContent = fM(R);
+      $("vBig").className = "verdict-big " + (esPositivo ? "pos" : "neg");
+
+      const primerMesPos = M.rows.findIndex((r, i) => r.r >= 0 && M.rows.slice(i).every(x => x.r >= 0));
+      
+      let narrativa = "";
+      if (esPositivo) {
+        narrativa = `El negocio cierra el año con un resultado contable positivo de <b>${fM(R)}</b>. `;
+        if (primerMesPos > 0) {
+          narrativa += `De enero a ${MESES_LARGOS[primerMesPos - 1]} se opera en pérdida controlada por rampa de captación, y a partir de <b>${MESES_LARGOS[primerMesPos]}</b> todos los meses generan excedente neto. Cada visita deja un margen de <b>${fm(M.unitarioBase.margenContrib)}</b> y se necesitan <b>${Math.ceil(M.puntoEquilibrio)} visitas/mes</b> para cubrir fijos y publicidad.`;
+        } else {
+          narrativa += `Todos los meses operan con margen positivo. Cada sesión deja <b>${fm(M.unitarioBase.margenContrib)}</b> libres.`;
+        }
+      } else {
+        narrativa = `En este escenario el año concluye con una pérdida neta de <b>${fM(R)}</b>. El margen unitario (${fm(M.unitarioBase.margenContrib)} por visita) no llega a compensar los costos fijos anuales (${fM(COSTOS_FIJOS * 12)}) y la pauta publicitaria (${fM(M.tot.pauta)}).`;
+      }
+      $("vText").innerHTML = narrativa;
+
+      // 3. Mascota Asesora Reactiva (Selvara Poses 1..10)
+      actualizarMascota(s, M, R, esPositivo);
+
+      // 4. Actualizar KPIs
+      const gananciaMensualProm = R / 12;
+      $("kMes").textContent = (gananciaMensualProm >= 0 ? "+" : "−") + fm(Math.abs(gananciaMensualProm));
+      $("kMes").className = "kpi-value " + (esPositivo ? "pos" : "neg");
+      
+      const mejorMes = M.rows.reduce((a, b) => b.r > a.r ? b : a, M.rows[0]);
+      const peorMes = M.rows.reduce((a, b) => b.r < a.r ? b : a, M.rows[0]);
+      $("kMesSub").textContent = `Mín: ${fM(peorMes.r)} (${peorMes.m}) · Máx: ${fM(mejorMes.r)} (${mejorMes.m})`;
+      
+      $("kMesBadge").textContent = gananciaMensualProm > 1000000 ? "Excelente" : gananciaMensualProm >= 0 ? "Aceptable" : "Déficit";
+      $("kMesBadge").className = "kpi-badge " + (gananciaMensualProm > 1000000 ? "badge-success" : gananciaMensualProm >= 0 ? "badge-warning" : "badge-danger");
+
+      // Equilibrio
+      const eqVis = Math.ceil(M.puntoEquilibrio);
+      $("kEq").textContent = eqVis;
+      const mesSuperaEq = M.rows.find(r => r.v >= eqVis);
+      $("kEqBadge").textContent = mesSuperaEq ? `Superado en ${mesSuperaEq.m}` : "No alcanzado";
+      $("kEqBadge").className = "kpi-badge " + (mesSuperaEq ? "badge-success" : "badge-danger");
+
+      // Caja a fin de año
+      const cajaFinal = M.rows[11].acc;
+      $("kCaja").textContent = fM(cajaFinal);
+      $("kCaja").className = "kpi-value " + (cajaFinal >= 0 ? "pos" : "neg");
+      const mesMinCaja = M.rows.reduce((min, r) => r.acc < min.acc ? r : min, M.rows[0]);
+      $("kCajaSub").textContent = `Punto más bajo: ${fM(mesMinCaja.acc)} (${mesMinCaja.m})`;
+      $("kCajaBadge").textContent = cajaFinal > 20e6 ? "Caja Fuerte" : cajaFinal >= 0 ? "Solvente" : "Quiebra de caja";
+      $("kCajaBadge").className = "kpi-badge " + (cajaFinal > 20e6 ? "badge-success" : cajaFinal >= 0 ? "badge-warning" : "badge-danger");
+
+      // Ratio LTV / CAC
+      const ratioLtvCac = M.ltv / M.cpa;
+      $("kLtv").textContent = ratioLtvCac.toLocaleString("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "x";
+      $("kLtv").className = "kpi-value " + (ratioLtvCac >= 3 ? "pos" : ratioLtvCac >= 1.5 ? "" : "neg");
+      $("kLtvSub").textContent = `LTV: ${fm(M.ltv)} · CAC: ${fm(M.cpa)}`;
+      
+      $("kLtvBadge").textContent = ratioLtvCac >= 3 ? "Excelente (>3x)" : ratioLtvCac >= 1.5 ? "Moderado (1.5–3x)" : "Alerta (<1.5x)";
+      $("kLtvBadge").className = "kpi-badge " + (ratioLtvCac >= 3 ? "badge-success" : ratioLtvCac >= 1.5 ? "badge-warning" : "badge-danger");
+
+      // 5. Cascada de Visita (Waterfall)
+      renderWaterfall(M.unitarioBase, s);
+
+      // 6. Gráficos SVG Mes a Mes
+      renderGraficos(M.rows);
+
+      // 7. Tabla Mes a Mes
+      renderTabla(M.rows, M.tot, R);
+
+      // 8. Tablas Desglose (Margen a Resultado & Caja vs Resultado)
+      renderTablasAuxiliares(M, s, R);
+    }
+
+    // Actualizador de la Mascota Asesora
+    function actualizarMascota(s, M, R, esPositivo) {
+      const img = $("mascotImg");
+      const bubble = $("mascotSpeech");
+      const ratio = M.ltv / M.cpa;
+
+      if (!esPositivo) {
+        // En pérdida -> Pose 6 (preocupado)
+        setMascotPose(6, "pose-6.webp");
+        bubble.innerHTML = "¡Cuidado Rami! El modelo da pérdida anual. Te sugiero bajar el CPL en Meta Ads o aumentar la tasa de conversión.";
+      } else if (s.compra) {
+        // Compra de láser -> Pose 8 (sorprendido) o 4 (reloj de repago)
+        setMascotPose(8, "pose-8.webp");
+        bubble.innerHTML = "¡Compramos el láser en julio ($18M)! Se siente en la caja de invierno, pero a fin de año dejamos la máquina paga y sin alquiler.";
+      } else if (ratio < 2.0) {
+        // CAC muy alto -> Pose 5 (señala abajo)
+        setMascotPose(5, "pose-5.webp");
+        bubble.innerHTML = `Ojo con la pauta: cada cliente cuesta ${fm(M.cpa)} y el ratio LTV/CAC bajó a ${ratio.toFixed(1)}x. Debería superar 3x.`;
+      } else if (R > 35e6) {
+        // Escenario récord -> Pose 10 (saludo/celebración)
+        setMascotPose(10, "pose-10.webp");
+        bubble.innerHTML = "¡Números extraordinarios! Cerramos con más de $35 millones. El servicio es el motor de rentabilidad de Selvara.";
+      } else {
+        // Escenario saludable -> Pose 7 (guiño) o 1 (lupa)
+        setMascotPose(7, "pose-7.webp");
+        bubble.innerHTML = `¡Excelente! El año deja ${fM(R)}. El punto de equilibrio (${Math.ceil(M.puntoEquilibrio)} visitas) se cubre holgadamente desde marzo.`;
+      }
+    }
+
+    function setMascotPose(num, filename) {
+      const img = $("mascotImg");
+      img.onerror = () => {
+        img.src = "../selvara-proyecto-final/Mascota/" + filename;
+      };
+      img.src = "assets/mascota/" + filename;
+    }
+
+    // Render Cascada de Visita
+    function renderWaterfall(u, s) {
+      const pasos = [
+        { label: "Precio de lista promedio", sub: "Mix mujer (60%) · hombre (30%) · facial/chica (10%)", val: PRECIO_LISTA, tipo: "start" },
+        { label: "Descuento comercial medio", sub: `${(u.descMedio * 100).toFixed(1)} % por prepago (20% off) y plan (10% off)`, val: -(PRECIO_LISTA - u.cobrado), tipo: "neg" },
+        { label: "IVA (21 %)", sub: "Impuesto al valor agregado (no es ingreso de Selvara)", val: -(u.cobrado - u.netoSinIva), tipo: "neg" },
+        { label: "Facturación neta real", sub: "Base imponible de la visita", val: u.netoSinIva, tipo: "sub" },
+        { label: "Comisión pasarela (Mercado Pago)", sub: "3,33 % promedio ponderado de cobros", val: -u.costosVar.mp, tipo: "neg" },
+        { label: "Impuestos sobre ingresos (IIBB + DReI)", sub: "4,6 % sobre el neto facturado", val: -u.costosVar.iibb, tipo: "neg" },
+        { label: "Gel e insumos descartables", sub: "Descartables de cabina y espátulas", val: -u.costosVar.insumos, tipo: "neg" },
+        { label: "Honorario operadora técnica", sub: "Pago profesional por paciente atendido", val: -u.costosVar.operadora, tipo: "neg" },
+        { label: "Costo de jornada láser", sub: s.compra ? "Equipo propio (sin costo por jornada)" : "Alquiler jornada ($110.000 ÷ 10 visitas)", val: -u.costosVar.laser, tipo: "neg" },
+        { label: "Margen de contribución neto", sub: "Fondo libre para cubrir costos fijos y publicidad", val: u.margenContrib, tipo: "end" }
+      ];
+
+      const maxVal = PRECIO_LISTA;
+      let run = 0;
+      
+      const html = pasos.map(p => {
+        let left, width, col;
+        if (p.tipo === "start" || p.tipo === "sub" || p.tipo === "end") {
+          left = 0;
+          width = p.val;
+          run = p.val;
+          col = p.tipo === "end" ? "var(--gain)" : "var(--selvara-green)";
+        } else {
+          run += p.val;
+          left = run;
+          width = -p.val;
+          col = "var(--loss)";
+        }
+
+        const leftPct = Math.max(0, (left / maxVal) * 100);
+        const widthPct = Math.max(0.6, (width / maxVal) * 100);
+
+        return `
+          <div class="wf-row">
+            <div class="wf-lbl">
+              <b>${p.tipo === "end" ? "⭐ " : ""}${p.label}</b>
+              <small>${p.sub}</small>
+            </div>
+            <div class="wf-bar-wrapper" title="${p.label}: ${fm(p.val)}">
+              <div class="wf-bar" style="left:${leftPct}%; width:${widthPct}%; background:${col};"></div>
+            </div>
+            <div class="wf-amt ${p.tipo === "end" ? "pos" : (p.val < 0 ? "neg" : "")}">
+              ${p.val < 0 ? "−" + fm(-p.val) : fm(p.val)}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      $("wf").innerHTML = html;
+    }
+
+    // Render de Gráficos SVG con Tooltips Interactivos
+    function renderGraficos(rs) {
+      $("chart").innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <h3 style="font-size:14px; font-weight:600; color:var(--selvara-green);">A. Resultado Económico Mensual (Ganancia / Pérdida en Millones)</h3>
+          <span style="font-size:11px; color:var(--selvara-muted);">Pasa el mouse sobre las barras para ver detalle</span>
+        </div>
+        ${drawSvg(rs, "r", "bars", 220)}
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:22px 0 6px;">
+          <h3 style="font-size:14px; font-weight:600; color:var(--cash);">B. Saldo Líquido de Caja Acumulada (Flujo de Fondos Bancario)</h3>
+          <span style="font-size:11px; color:var(--cash);">Incluye adelantos prepagos</span>
+        </div>
+        ${drawSvg(rs, "acc", "line", 190)}
+      `;
+    }
+
+    function drawSvg(rs, key, type, H) {
+      const W = 760, pl = 64, pr = 20, pt = 22, pb = 28;
+      const vals = rs.map(r => r[key]).concat(0);
+      let lo = Math.min(...vals), hi = Math.max(...vals);
+      const span = hi - lo || 1;
+      lo -= span * 0.08;
+      hi += span * 0.12;
+
+      const y = v => pt + (hi - v) / (hi - lo) * (H - pt - pb);
+      const bw = (W - pl - pr) / 12;
+      const x = i => pl + i * bw;
+      const cx = i => x(i) + bw / 2;
+
+      const st = niceStep((hi - lo) / 4);
+      const ticks = [];
+      for (let t = Math.ceil(lo / st) * st; t <= hi; t += st) ticks.push(t);
+
+      const lab = t => Math.abs(t) < 1 ? "0" : (Math.abs(t) < 1e6 ? (t / 1e3).toFixed(0) + " mil" : (t / 1e6).toFixed(1) + " M");
+
+      let svg = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+
+      // Líneas de grilla
+      svg += ticks.map(t => `
+        <line x1="${pl}" x2="${W - pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--selvara-border)" stroke-dasharray="3,3" />
+        <text x="${pl - 8}" y="${y(t) + 4}" text-anchor="end" font-size="10.5" fill="var(--selvara-muted)" font-family="JetBrains Mono, monospace">${lab(t)}</text>
+      `).join("");
+
+      // Línea de cero (Break-even horizontal)
+      svg += `<line x1="${pl}" x2="${W - pr}" y1="${y(0)}" y2="${y(0)}" stroke="var(--selvara-charcoal)" stroke-width="1.2" />`;
+
+      // Nombres de meses en el eje X
+      svg += rs.map((r, i) => `
+        <text x="${cx(i)}" y="${H - 8}" text-anchor="middle" font-size="11" font-weight="500" fill="var(--selvara-muted)">${r.m}</text>
+      `).join("");
+
+      if (type === "bars") {
+        svg += rs.map((r, i) => {
+          const v = r[key];
+          const y0 = y(0);
+          const y1 = y(v);
+          const esUp = v >= 0;
+          const barY = Math.min(y0, y1);
+          const barH = Math.max(Math.abs(y1 - y0), 2);
+          const fillCol = esUp ? "var(--gain)" : "var(--loss)";
+
+          return `
+            <g class="bar-group" style="cursor:pointer;">
+              <rect x="${x(i) + bw * 0.18}" y="${barY}" width="${bw * 0.64}" height="${barH}" fill="${fillCol}" rx="3">
+                <title>${r.nombreLargo}: ${fM(v)} | ${Math.round(r.v)} visitas | ${Math.round(r.p)} planes</title>
+              </rect>
+              <text x="${cx(i)}" y="${esUp ? barY - 6 : barY + barH + 13}" text-anchor="middle" font-size="10" font-weight="600" fill="${esUp ? "var(--gain)" : "var(--loss)"}" font-family="JetBrains Mono, monospace">
+                ${(v / 1e6).toFixed(1)}
+              </text>
+            </g>
+          `;
+        }).join("");
+      } else {
+        // Línea de caja acumulada
+        const pts = rs.map((r, i) => `${cx(i)},${y(r[key])}`).join(" ");
+        const firstY = y(rs[0][key]);
+        const lastY = y(rs[11][key]);
+
+        svg += `<polygon points="${cx(0)},${y(0)} ${pts} ${cx(11)},${y(0)}" fill="var(--cash)" opacity="0.15" />`;
+        svg += `<polyline fill="none" stroke="var(--cash)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" points="${pts}" />`;
+
+        svg += rs.map((r, i) => `
+          <circle cx="${cx(i)}" cy="${y(r[key])}" r="${i === 11 ? 5 : 3.5}" fill="var(--surface)" stroke="var(--cash)" stroke-width="2.5" style="cursor:pointer;">
+            <title>${r.nombreLargo}: Caja ${fM(r[key])}</title>
+          </circle>
+        `).join("");
+
+        const ult = rs[11][key];
+        svg += `
+          <text x="${cx(11) - 10}" y="${y(ult) - 10}" text-anchor="end" font-size="12" font-weight="700" fill="var(--cash)" font-family="JetBrains Mono, monospace">
+            Caja fin de año: ${fM(ult)}
+          </text>
+        `;
+      }
+
+      svg += "</svg>";
+      return svg;
+    }
+
+    function niceStep(r) {
+      const p = Math.pow(10, Math.floor(Math.log10(r)));
+      const n = r / p;
+      return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p;
+    }
+
+    // Render Tabla Detallada
+    function renderTabla(rs, tot, R) {
+      $("tbl").innerHTML = `
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>Planes</th>
+            <th>Visitas</th>
+            <th>Ingresos Netos</th>
+            <th>Margen Contrib.</th>
+            <th>Pauta Meta</th>
+            <th>Resultado Mes</th>
+            <th>Caja Acumulada</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rs.map(r => `
+            <tr>
+              <td><b>${r.m}</b></td>
+              <td>${Math.round(r.p)}</td>
+              <td>${Math.round(r.v)}</td>
+              <td>${fM2(r.ingresos)}</td>
+              <td>${fM2(r.contribucion)}</td>
+              <td>${fM2(r.pauta)}</td>
+              <td class="${r.r >= 0 ? "pos" : "neg"}">${fM2(r.r)}</td>
+              <td style="color:var(--cash); font-weight:600;">${fM2(r.acc)}</td>
+            </tr>
+          `).join("")}
+          <tr class="total-row">
+            <td>TOTAL 2027</td>
+            <td>${Math.round(tot.p)}</td>
+            <td>${Math.round(tot.v).toLocaleString("es-AR")}</td>
+            <td>${fM2(tot.ing)}</td>
+            <td>${fM2(tot.cContrib)}</td>
+            <td>${fM2(tot.pauta)}</td>
+            <td class="${R >= 0 ? "pos" : "neg"}">${fM2(R)}</td>
+            <td style="color:var(--cash);">${fM2(rs[11].acc)}</td>
+          </tr>
+        </tbody>
+      `;
+    }
+
+    // Render Tablas de Resumen
+    function renderTablasAuxiliares(M, s, R) {
+      // Cascada del Margen al Resultado
+      const casc = [
+        [`${Math.round(M.tot.v).toLocaleString("es-AR")} visitas atendidas × margen`, M.tot.cvTot, 0],
+        ["− Garantía de satisfacción (15% casos)", -M.tot.gar, 0],
+        ["− Capacidad ociosa láser (turnos vacíos)", -M.tot.idle, 0]
+      ];
+      if (s.compra) {
+        casc.push(["− Mantenimiento láser propio ($450k/mes)", -M.tot.laserFijo, 0]);
+      }
+      casc.push(
+        ["= Margen de Contribución Total", M.tot.cContrib, 1],
+        ["− Pauta publicitaria (Meta Ads / WhatsApp)", -M.tot.pauta, 0],
+        ["− Costos fijos anuales ($1.002.667 × 12)", -COSTOS_FIJOS * 12, 0],
+        ["= RESULTADO ECONÓMICO ANUAL", R, 1]
+      );
+
+      $("cascade").innerHTML = "<tbody>" + casc.map(([l, v, isTot]) => `
+        <tr class="${isTot ? "total-row" : ""}">
+          <td>${l}</td>
+          <td class="${isTot ? (v >= 0 ? "pos" : "neg") : ""}">${fM(v)}</td>
+        </tr>
+      `).join("") + "</tbody>";
+
+      // Por qué la caja da más
+      const cx = [
+        ["Resultado económico anual devengado", R, 0],
+        ["+ Anticipos prepagos (100% cobrado)", M.prepagoCobradoTotal, 0],
+        ["− Sesiones prepagas efectivamente brindadas", -M.prepagoConsumidoTotal, 0]
+      ];
+      if (s.compra) {
+        cx.push(["− Desembolso compra de láser (Julio)", -18000000, 0]);
+      }
+      cx.push(["= CAJA LÍQUIDA A FIN DE AÑO", M.rows[11].acc, 1]);
+
+      $("cashx").innerHTML = "<tbody>" + cx.map(([l, v, isTot]) => `
+        <tr class="${isTot ? "total-row" : ""}">
+          <td>${l}</td>
+          <td style="${isTot ? "color:var(--cash); font-weight:700;" : ""}">${fM(v)}</td>
+        </tr>
+      `).join("") + "</tbody>";
+    }
+
+    // Configuración de Presets
+    function setPreset(k) {
+      const p = PRESETS[k];
+      if (!p) return;
+      $("P").value = p.P;
+      $("cpl").value = p.cpl;
+      $("conv").value = p.conv;
+      $("jor").value = p.jor;
+      $("op").value = p.op;
+      $("prep").value = p.prep;
+      $("compra").checked = p.compra;
+
+      markPresetButton(k);
+      updateApp();
+    }
+
+    function markPresetButton(k) {
+      document.querySelectorAll("#presets button").forEach(b => {
+        b.setAttribute("aria-pressed", b.dataset.p === k ? "true" : "false");
+      });
+    }
+
+    // Recorrido de Exposición Oral (Modo Pitch)
+    const pitchStepsData = [
+      {
+        step: 1,
+        target: "sectionWaterfall",
+        speech: "Profesor: comenzamos por la unidad. De una sesión de $53.800 de lista, el margen neto es de ~$15.500 después de descuentos, IVA, comisiones y costos directos de cabina.",
+        note: "Paso 1: Explicá el margen unitario ($15.534/visita) antes de mostrar el año.",
+        preset: "base"
+      },
+      {
+        step: 2,
+        target: "kpiCardLtv",
+        speech: "En captación invertimos en Meta Ads con un CPL de $4.000 y 20% de conversión. El CAC es de $20.000 frente a un LTV de $80.000+, dando un ratio saludable superior a 4x.",
+        note: "Paso 2: Destacá el ratio LTV/CAC de 4.2x frente a los costos de pauta.",
+        preset: "base"
+      },
+      {
+        step: 3,
+        target: "sectionMonthly",
+        speech: "Enero y febrero dan pérdida contable porque hay pocas visitas y los fijos corren al 100%. Pero en marzo superamos el punto de equilibrio (84 visitas) y el servicio pasa a terreno positivo.",
+        note: "Paso 3: Justificá por qué los primeros meses dan rojo y cuándo se equilibra.",
+        preset: "base"
+      },
+      {
+        step: 4,
+        target: "sectionDeepDive",
+        speech: "El gran hallazgo financiero: la caja acumula mucho más dinero que la ganancia contable debido a los clientes que pagan el plan por adelantado. ¡Es capital de trabajo puro!",
+        note: "Paso 4: Explicá el efecto de la caja y los cobros prepagos anticipados.",
+        preset: "base"
+      }
+    ];
+
+    let currentPitchStep = 1;
+
+    function goToPitchStep(num) {
+      currentPitchStep = num;
+      const data = pitchStepsData.find(d => d.step === num);
+      if (!data) return;
+
+      document.querySelectorAll(".pitch-step-btn").forEach(b => {
+        b.classList.toggle("current", +b.dataset.step === num);
+      });
+
+      $("pitchNote").textContent = data.note;
+      $("mascotSpeech").innerHTML = data.speech;
+
+      // Poses según paso
+      if (num === 1) setMascotPose(1, "pose-1.webp"); // Lupa
+      else if (num === 2) setMascotPose(9, "pose-9.webp"); // Idea
+      else if (num === 3) setMascotPose(4, "pose-4.webp"); // Reloj
+      else if (num === 4) setMascotPose(10, "pose-10.webp"); // Festejo
+
+      // Scroll suave y foco
+      const el = $(data.target);
+      if (el) {
+        document.querySelectorAll(".highlight-focus").forEach(c => c.classList.remove("highlight-focus"));
+        el.classList.add("highlight-focus");
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    // Copiar Resumen Ejecutivo al Portapapeles
+    function copyExecutiveSummary() {
+      const s = getInputs();
+      const M = runModel(s);
+      const R = M.tot.rNeto;
+
+      const texto = `**SELVARA ESTÉTICA INTEGRAL · RESUMEN FINANCIERO DEPILACIÓN (2027)**
+- **Planes vendidos:** ${s.P} planes (${Math.round(M.tot.v).toLocaleString("es-AR")} visitas atendidas).
+- **Margen de contribución por visita:** ${fm(M.unitarioBase.margenContrib)} (Precio lista: ${fm(PRECIO_LISTA)}).
+- **Punto de equilibrio mensual:** ${Math.ceil(M.puntoEquilibrio)} visitas para cubrir fijos ($1.002.667) y pauta.
+- **CPA (Costo de adquisición):** ${fm(M.cpa)} (CPL ${fm(s.cpl)} con ${Math.round(s.conv*100)}% de conversión).
+- **LTV por cliente:** ${fm(M.ltv)} | **Ratio LTV/CAC:** ${(M.ltv/M.cpa).toFixed(1)}x.
+- **Resultado económico anual:** ${fM(R)}.
+- **Saldo de caja a fin de año:** ${fM(M.rows[11].acc)} (Fondo de maniobra fortalecido por ${Math.round(s.prep*100)}% de planes prepagos).
+- **Decisión de equipo:** ${s.compra ? "Compra de láser propio efectuada en julio ($18M)." : "Alquiler de láser por jornada ($110.000/día)."}
+*Fuente: TP Integrador Presupuesto y Monetización · ISEC 2026.*`;
+
+      navigator.clipboard.writeText(texto).then(() => {
+        showToast("¡Resumen ejecutivo copiado al portapapeles!");
+      }).catch(() => {
+        showToast("No se pudo copiar automáticamente. Podés seleccionar el texto.");
+      });
+    }
+
+    function showToast(msg) {
+      const toast = $("toastMsg");
+      $("toastText").textContent = msg;
+      toast.style.display = "flex";
+      setTimeout(() => { toast.style.display = "none"; }, 3500);
+    }
+
+    // Listeners y Enlaces de Eventos
+    function initListeners() {
+      // Presets
+      document.querySelectorAll("#presets button").forEach(b => {
+        b.addEventListener("click", () => setPreset(b.dataset.p));
+      });
+
+      // Sliders y Checkbox
+      inputsList.concat("compra").forEach(id => {
+        $(id).addEventListener("input", () => {
+          markPresetButton(null);
+          updateApp();
+        });
+      });
+
+      // Botones +/- de ajuste fino
+      document.querySelectorAll(".btn-step").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.stepId;
+          const dir = +btn.dataset.dir;
+          const input = $(id);
+          if (!input) return;
+          const step = +input.step || 1;
+          const val = +input.value + dir * step;
+          if (val >= +input.min && val <= +input.max) {
+            input.value = val;
+            markPresetButton(null);
+            updateApp();
+          }
+        });
+      });
+
+      // Botón Reset
+      $("btnResetAll").addEventListener("click", () => setPreset("base"));
+
+      // Pestañas Gráficos vs Tabla
+      $("tabChart").addEventListener("click", () => {
+        $("tabChart").classList.add("active");
+        $("tabTable").classList.remove("active");
+        $("chartView").style.display = "block";
+        $("tableView").style.display = "none";
+      });
+      $("tabTable").addEventListener("click", () => {
+        $("tabTable").classList.add("active");
+        $("tabChart").classList.remove("active");
+        $("chartView").style.display = "none";
+        $("tableView").style.display = "block";
+      });
+
+      // Acordeones FAQ
+      document.querySelectorAll(".faq-trigger").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const item = btn.closest(".faq-item");
+          item.classList.toggle("open");
+        });
+      });
+
+      // Modo Presentación Toggle
+      $("btnPitchToggle").addEventListener("click", () => {
+        const bar = $("pitchBar");
+        const btn = $("btnPitchToggle");
+        const isOpen = bar.classList.toggle("active");
+        btn.classList.toggle("active", isOpen);
+        if (isOpen) {
+          goToPitchStep(1);
+        } else {
+          document.querySelectorAll(".highlight-focus").forEach(c => c.classList.remove("highlight-focus"));
+        }
+      });
+
+      // Pasos del Modo Pitch
+      document.querySelectorAll(".pitch-step-btn").forEach(btn => {
+        btn.addEventListener("click", () => goToPitchStep(+btn.dataset.step));
+      });
+      $("btnPitchNext").addEventListener("click", () => {
+        const next = (currentPitchStep % 4) + 1;
+        goToPitchStep(next);
+      });
+
+      // Copiar Resumen
+      $("btnCopyReport").addEventListener("click", copyExecutiveSummary);
+
+      // Toggle Tema Claro / Oscuro
+      $("btnThemeToggle").addEventListener("click", () => {
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        if (isDark) {
+          document.documentElement.removeAttribute("data-theme");
+          $("themeIcon").textContent = "🌙";
+        } else {
+          document.documentElement.setAttribute("data-theme", "dark");
+          $("themeIcon").textContent = "☀️";
+        }
+      });
+
+      // Clic en la mascota para alternar tips
+      $("mascotAvatar").addEventListener("click", () => {
+        const tips = [
+          "Tip de cátedra: siempre aclarale al profe que la caja y el resultado son dos cosas distintas.",
+          "El 25% de la pauta se asigna con prudencia porque competimos por reseñas de Google Maps, no solo por pauta en frío.",
+          "Comprar el láser en julio ($18M) autofinancia el activo con la caja ya generada de los prepagos.",
+          "El 15% de los pacientes usa las 2 sesiones de garantía; eso ya está deducido en el LTV."
+        ];
+        const randomTip = tips[Math.floor(Math.random() * tips.length)];
+        $("mascotSpeech").innerHTML = randomTip;
+        setMascotPose(9, "pose-9.webp");
+      });
+    }
+
+    // Inicialización
+    initListeners();
+    updateApp();
+
+  })();
+  </script>
+</body>
+</html>
